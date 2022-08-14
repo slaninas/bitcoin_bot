@@ -54,7 +54,7 @@ fn format_blocks(blocks: Vec<serde_json::Value>) -> EventNonSigned {
 
         writeln!(content, "- tx count: {}", format(&block["tx_count"])).unwrap();
         writeln!(content, "- size: {}", format(&block["size"])).unwrap();
-        writeln!(content, "- weight: {}\n", format(&block["weight"])).unwrap();
+        writeln!(content, "- weight: {}", format(&block["weight"])).unwrap();
     }
 
     EventNonSigned {
@@ -128,7 +128,7 @@ async fn main() {
         .name("bitcoin_bot")
         .about("Bot publishing info about newly mined blocks. Using https://mempool.space/ API.")
         .picture("https://upload.wikimedia.org/wikipedia/commons/5/50/Bitcoin.png")
-        .intro_message("Hi, I'm will be posting info about newly mined blocks.")
+        .intro_message("Hi, I will be posting info about newly mined blocks.")
         // .command(Command::new("!difficulty", wrap!(difficulty)))
         .sender(sender)
         .spawn(Box::pin(update))
