@@ -91,7 +91,7 @@ async fn main() {
         let sender = sender.clone();
         let state = state.clone();
         async move {
-            let errors_discard_period = std::time::Duration::from_secs(1);
+            let errors_discard_period = std::time::Duration::from_secs(3600);
             let mut last_error_time = std::time::SystemTime::now();
 
             loop {
@@ -119,7 +119,7 @@ async fn main() {
                         }
                     }
                 }
-                tokio::time::sleep(std::time::Duration::from_secs(15)).await;
+                tokio::time::sleep(std::time::Duration::from_secs(30)).await;
             }
         }
     };
