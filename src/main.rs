@@ -42,7 +42,7 @@ async fn get_new_blocks(
 fn format_blocks(blocks: Vec<serde_json::Value>) -> EventNonSigned {
     let mut content = format!("Got {} newly mined block(s):\n", blocks.len());
 
-    for block in blocks.iter() {
+    for (i, block) in blocks.iter().enumerate() {
         writeln!(content, "{}", block["id"].to_string().replace('\"', "")).unwrap();
         writeln!(content, "- height: {}", format(&block["height"])).unwrap();
 
@@ -55,6 +55,12 @@ fn format_blocks(blocks: Vec<serde_json::Value>) -> EventNonSigned {
         writeln!(content, "- tx count: {}", format(&block["tx_count"])).unwrap();
         writeln!(content, "- size: {}", format(&block["size"])).unwrap();
         writeln!(content, "- weight: {}", format(&block["weight"])).unwrap();
+        writeln!(content, "- https://mempool.space/block/{}", block["id"].to_string().replace('"', "")).unwrap();
+
+        if i + 1 < blocks.len() {
+            writeln!(content, "").unwrap();
+        }
+
     }
 
     EventNonSigned {
