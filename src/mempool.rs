@@ -1,5 +1,4 @@
-// TODO: Use mainnet
-const BASE: &str = "https://mempool.space/testnet/api";
+const BASE: &str = "https://mempool.space/api";
 
 async fn get_response(url: &str) -> Result<String, reqwest::Error> {
     reqwest::get(url).await?.text().await
