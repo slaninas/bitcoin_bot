@@ -87,8 +87,10 @@ async fn main() {
 
     let relays = vec![
         "wss://nostr-pub.wellorder.net",
-        "wss://relay.damus.io",
         "wss://relay.nostr.info",
+        "wss://relay.damus.io",
+        "wss://nostr.delo.software",
+        "wss://nostr.zaprite.io",
     ];
 
     let current_tip_hash = mempool::block_tip_hash().await.unwrap();
