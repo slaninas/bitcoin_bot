@@ -2,15 +2,18 @@ use chrono::{NaiveDateTime, TimeZone, Utc};
 use num_format::{Locale, ToFormattedString};
 use std::fmt::Write;
 
-use nostr_bot::{log::debug, tokio, unix_timestamp, EventNonSigned};
+use nostr_bot::{
+    log::debug, tokio, unix_timestamp, wrap, Command, Event, EventNonSigned, FunctorType,
+};
 
 mod mempool;
 
 struct Info {
     last_block_hash: String,
+    start_timestamp: u64,
 }
 
-// type State = nostr_bot::State<Info>;
+type State = nostr_bot::State<Info>;
 
 fn format(value: &serde_json::Value) -> String {
     let num = value.to_string().parse::<u64>().unwrap();
@@ -37,6 +40,21 @@ async fn get_new_blocks(
     }
 
     Ok((current_block_hash, blocks))
+}
+
+async fn uptime(event: Event, state: State) -> EventNonSigned {
+    let start_timestamp = state.lock().await.start_timestamp;
+    let timestamp = unix_timestamp();
+
+    let running_secs = timestamp - start_timestamp;
+
+    nostr_bot::get_reply(
+        event,
+        format!(
+            "Running for {}",
+            compound_duration::format_dhms(running_secs)
+        ),
+    )
 }
 
 fn format_blocks(blocks: Vec<serde_json::Value>) -> EventNonSigned {
@@ -96,6 +114,7 @@ async fn main() {
     let current_tip_hash = mempool::block_tip_hash().await.unwrap();
     let state = nostr_bot::wrap_state(Info {
         last_block_hash: current_tip_hash,
+        start_timestamp: unix_timestamp(),
     });
 
     let sender = nostr_bot::new_sender();
@@ -123,7 +142,7 @@ async fn main() {
                         let now = std::time::SystemTime::now();
                         if now.duration_since(last_error_time).unwrap() > errors_discard_period {
                             let event = EventNonSigned {
-                                created_at: nostr_bot::unix_timestamp(),
+                                created_at: unix_timestamp(),
                                 kind: 1,
                                 content: String::from("I'm unable to reach the API."),
                                 tags: vec![],
@@ -143,7 +162,10 @@ async fn main() {
         .about("Bot publishing info about newly mined blocks. Using https://mempool.space/ API.")
         .picture("https://upload.wikimedia.org/wikipedia/commons/5/50/Bitcoin.png")
         .intro_message("Hi, I will be posting info about newly mined blocks.")
-        // .command(Command::new("!difficulty", wrap!(difficulty)))
+        .command(
+            Command::new("!uptime", wrap!(uptime))
+                .description("Show for how long is the bot running."),
+        )
         .sender(sender)
         .spawn(Box::pin(update))
         .help()
