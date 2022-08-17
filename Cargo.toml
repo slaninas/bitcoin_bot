@@ -8,7 +8,7 @@ edition = "2021"
 [dependencies]
 chrono = "0.4.22"
 compound_duration = "1.2.0"
-nostr-bot = { git = "https://github.com/slaninas/nostr-bot", rev = "6f1419e82ce580ffc0f84b180eb1326381dfef7b" }
+nostr-bot = "0.2"
 num-format = "0.4.0"
 reqwest = "0.11.11"
 serde_json = "1.0.83"

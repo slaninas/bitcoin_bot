@@ -587,8 +587,9 @@ checksum = "72ef4a56884ca558e5ddb05a1d1e7e1bfd9a68d9ed024c21704cc98872dae1bb"
 
 [[package]]
 name = "nostr-bot"
-version = "0.1.0"
-source = "git+https://github.com/slaninas/nostr-bot?rev=6f1419e82ce580ffc0f84b180eb1326381dfef7b#6f1419e82ce580ffc0f84b180eb1326381dfef7b"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9f52ac00a2ec428d6d820beb90c1c87de851ead7a0091ff0dd5832d041ef871e"
 dependencies = [
  "env_logger",
  "futures-util",
