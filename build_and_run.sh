@@ -1,5 +1,7 @@
 #!/bin/bash
 
 NAME=bitcoin_bot
-docker build -t $NAME . && \
+LAST_BLOCK=$1
+
+docker build -t $NAME --build-arg LAST_BLOCK=$LAST_BLOCK . && \
     docker run --rm -ti --name $NAME $NAME
