@@ -111,9 +111,18 @@ async fn main() {
         "wss://nostr.zaprite.io",
     ];
 
-    let current_tip_hash = mempool::block_tip_hash().await.unwrap();
+    let args = std::env::args().collect::<Vec<_>>();
+
+    let last_block_hash = if args.len() == 2 {
+        nostr_bot::log::info!("Using {} as last block.", args[1]);
+        args[1].to_string()
+    } else {
+        nostr_bot::log::warn!("Last block hash not specified, using current tip.");
+        mempool::block_tip_hash().await.unwrap()
+    };
+
     let state = nostr_bot::wrap_state(Info {
-        last_block_hash: current_tip_hash,
+        last_block_hash,
         start_timestamp: unix_timestamp(),
     });
 
