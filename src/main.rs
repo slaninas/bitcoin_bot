@@ -22,8 +22,8 @@ fn format(value: &serde_json::Value) -> String {
 
 async fn get_new_blocks(
     last_block_hash: String,
-) -> Result<(String, Vec<serde_json::Value>), reqwest::Error> {
-    let current_block_hash = mempool::block_tip_hash().await?;
+) -> Result<(String, Vec<serde_json::Value>), String> {
+    let current_block_hash = mempool::block_tip_hash().await.map_err(|e| format!("Error getting tip hash: {}", e))?;
 
     debug!(
         "last_block_hash: {}, current_block_hash: {}",
@@ -33,8 +33,10 @@ async fn get_new_blocks(
 
     let mut blocks = vec![];
     while block_hash != last_block_hash {
+        let block_raw = mempool::get_block(&block_hash).await.map_err(|e| format!("Error getting block: {}", e))?;
+        debug!("block_raw: >{}<", block_raw);
         let block: serde_json::Value =
-            serde_json::from_str(&mempool::get_block(&block_hash).await?).unwrap();
+            serde_json::from_str(&block_raw).map_err(|e| format!("Error parsing the block: {}", e))?;
         block_hash = block["previousblockhash"].to_string().replace('\"', "");
         blocks.push(block);
     }
@@ -170,7 +172,7 @@ async fn main() {
         .name("bitcoin_bot")
         .about("Bot publishing info about newly mined blocks. Using https://mempool.space/ API.")
         .picture("https://upload.wikimedia.org/wikipedia/commons/5/50/Bitcoin.png")
-        .intro_message("Hi, I will be posting info about newly mined blocks.")
+//        .intro_message("Hi, I will be posting info about newly mined blocks.")
         .command(
             Command::new("!uptime", wrap!(uptime))
                 .description("Show for how long is the bot running."),
